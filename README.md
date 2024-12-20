@@ -1,12 +1,12 @@
-# wepsim_tester: WepSIM Laboratory Checker
+# WepSIM Tester for submissions
 
 ### Initial steps
 
 1. First, you need to download the project (download the .zip file or "git clone" it):
 ```console
    wget https://github.com/wepsim/tester/archive/refs/heads/main.zip
-   unzip main.zip
-   cd main/
+   unzip tester-main.zip
+   cd tester-main/
 ```
 
 2. Then, you need to download all laboratories of each teaching group and save the associated .zip file the ```submissions``` directory.
