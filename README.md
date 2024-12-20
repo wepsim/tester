@@ -39,7 +39,7 @@
 
 4. To check only the 90 group:
 ```console
-   ./s20_check.sh  ES  tests/tests.in   p2-90.in
+   ./s20_check.sh      tests/tests.in   p2-90.in
 ```
 
 5. Finally, you can spin down the container:
@@ -68,22 +68,15 @@
 3.a To check again the 90 group:
 ```console
    ./s10_tests.sh      tests/tests.in   
-   ./s20_check.sh  ES  tests/tests.in   p2-90.in
+   ./s20_check.sh      tests/tests.in   p2-90.in
 ```
 
 3.b To check again several groups:
 ```console
-   ./s20_check.sh  ES  tests/tests.in   p2-80.in
-
-   ./s20_check.sh  ES  tests/tests.in   p2-81.in
-   ./s20_check.sh  ES  tests/tests.in   p2-84.in
-   ./s20_check.sh  ES  tests/tests.in   p2-85.in
-
-   ./s20_check.sh  EN  tests/tests.in   p2-88.in
-   ./s20_check.sh  EN  tests/tests.in   p2-89.in
-
-   ./s20_check.sh  ES  tests/tests.in   p2-801.in
-   ./s20_check.sh  EN  tests/tests.in   p2-121.in
+   ./s20_check.sh      tests/tests.in   p2-80.in
+   ./s20_check.sh      tests/tests.in   p2-81.in
+   ./s20_check.sh      tests/tests.in   p2-82.in
+   ./s20_check.sh      tests/tests.in   p2-83.in
 ```
 
 3.c To check a sublist please use:

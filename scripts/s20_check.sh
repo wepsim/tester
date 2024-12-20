@@ -100,22 +100,21 @@ echo "---------"
 # Test parameters...
 if [ $# -lt 1 ]; then
      echo "  Version: v2.5"
-     echo "    Usage: $0 <language> <test list file (one per line)> <list (one per line) of directories to check>"
-     echo "  Example: $0 ES         tests/tests.in                p2-81.in"
-     echo "  Example: $0 EN         tests/tests.in                p2-88.in"
+     echo "    Usage: $0       <test list file (one per line)> <list (one per line) of directories to check>"
+     echo "  Example: $0       tests/tests.in                p2-81.in"
+     echo "  Example: $0       tests/tests.in                p2-82.in"
      echo ""
      exit
 fi
 
 
 # Setup workspace...
-GR_LANG=$(echo $1 | tr a-z A-Z)
-FNAME_I=$2
-LIST_I=$(cat $2)
-TEST_DIR=$(dirname $2)
+FNAME_I=$1
+LIST_I=$(cat $1)
+TEST_DIR=$(dirname $1)
 
-LIST_A=$(cat $3)
-BASE_DIR=$(echo $3 | sed 's/\.in//g')
+LIST_A=$(cat $2)
+BASE_DIR=$(echo $2 | sed 's/\.in//g')
 
 REPORT_DIR="report-"$BASE_DIR
 REPORT_HTML="report-"$BASE_DIR".html"
@@ -138,14 +137,8 @@ for A in $LIST_A; do
     mkdir -p $REPORT_DIR/$A/output
 
     E1_CHECKPOINT_NAME=e1_checkpoint.txt
-    if [ "$GR_LANG" == "EN" ]; then
-         REPORT=report.pdf
-         AUTHORS=authors.txt
-    fi
-    if [ "$GR_LANG" == "ES" ]; then
-         REPORT=report.pdf
-         AUTHORS=authors.txt
-    fi
+    REPORT=report.pdf
+    AUTHORS=authors.txt
 
     U=""
 
