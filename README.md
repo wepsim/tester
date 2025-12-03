@@ -65,7 +65,27 @@
    ./s20_check.sh      tests/tests.in   p2-90.in
    ```
 
-5. Finally, you can spin down the container:
+5. To show the results, first you could start a simple web server with:
+   ```console
+   python3 -m http.server 8000 &
+   ```
+   And use outside the container (in your host system) your web browser:
+   ```console
+   firefox http://localhost:8000/report-p2-90.html
+   ```
+   The following image is an example of report generated:
+<p align="center">
+    <img src="docs/report-90.png" alt="Example of report for group 90" width="300">
+</p>
+   Main parts:
+   * (1) Summary of all tests.
+   * (2) Microcode only.
+   * (3) Assembly only.
+   * (4) Link to the directory with all submitted files.
+   * (5) Links to the assembly code with the corresponding tests executed.
+   * (6) Result of a particular test for one particular group.
+
+6. Finally, you can spin down the container:
    ```console
    ./ws.sh stop
    ```
