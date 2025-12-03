@@ -2,20 +2,20 @@
 #set -x
 
 #
-#   Copyright 2015-2025 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
-# 
+#   Copyright 2015-2026 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
+#
 #   This file is part of WepSIM (https://wepsim.github.io/wepsim/)
-# 
+#
 #   WepSIM is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Lesser General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-# 
+#
 #   WepSIM is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU Lesser General Public License for more details.
-# 
+#
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with WepSIM.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -51,18 +51,17 @@ fi
 
 # Unzip each submission withing the group...
 echo " => Unzip each submission..."
-LIST_A=$(cat $BASE_DIR".in")
-for A in $LIST_A; do
+while IFS= read -r A; do
 
     echo "$A"
-    unzip -a -u -d $BASE_DIR/$A $BASE_DIR/$A".zip"
+    unzip -a -u -d "$BASE_DIR/${A}" "$BASE_DIR/${A}.zip"
 
-    if [ -d $BASE_DIR/$A/$A ]; then
-	 mv $BASE_DIR/$A/$A/* $BASE_DIR/$A
-	 rmdir $BASE_DIR/$A/$A
+    if [ -d "$BASE_DIR/$A/${A}" ]; then
+         mv "$BASE_DIR/$A/${A}/"* "$BASE_DIR/${A}"
+         rmdir "$BASE_DIR/$A/${A}"
     fi
 
-done
+done < $BASE_DIR".in"
 
 # Done.
 echo ""

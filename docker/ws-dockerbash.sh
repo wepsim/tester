@@ -2,9 +2,9 @@
 #set -x
 
 #
-#  Copyright 2019-2026 Saul Alonso Monsalve, Diego Camarmas Alonso, Felix Garcia Carballeira, Jose Rivadeneira Lopez-Bravo, Alejandro Calderon Mateos,
+#  Copyright 2015-2026 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
 #
-#  This file is part of WepSIM proyect.
+#  This file is part of WepSIM (https://wepsim.github.io/wepsim/)
 #
 #  WepSIM is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Lesser General Public License as published by
@@ -21,11 +21,10 @@
 #
 
 
-# Start SSHD
-/usr/sbin/sshd -D
-status=$?
-if [ $status -ne 0 ]; then
-     echo "Failed to start sshd: $status"
-     exit $status
-fi
+# tester
+/work/docker/tester-install.sh  /work  /opt/wepsim  /work/tester
+chown -R $HOST_UID:$HOST_GID                        /work/tester >& /dev/null
+
+# help
+/work/tester/help.sh
 

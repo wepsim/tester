@@ -2,7 +2,7 @@
 #set -x
 
 #
-#  Copyright 2019-2025 Saul Alonso Monsalve, Felix Garcia Carballeira, Jose Rivadeneira Lopez-Bravo, Alejandro Calderon Mateos,
+#  Copyright 2019-2026 Saul Alonso Monsalve, Felix Garcia Carballeira, Jose Rivadeneira Lopez-Bravo, Alejandro Calderon Mateos,
 #
 #  This file is part of WepSIM proyect.
 #
@@ -36,12 +36,24 @@ fi
 # check docker
 #
 
+WSSH_VER="v1.0"
+DOCKER_PREFIX_NAME=docker
+
 docker -v >& /dev/null
 status=$?
 if [ $status -ne 0 ]; then
-     echo ": docker is not found in this computer."
-     echo ": * Did you install docker?."
-     echo ":   Please visit https://docs.docker.com/get-docker/"
+     echo ""
+     echo "  WepSIM Tester on Docker ($WSSH_VER) "
+     echo " --------------------------------"
+     echo ""
+     echo ": ERROR: docker is not found in this computer."
+     echo ":"
+     echo ": Just in case, please check:"
+     echo ":  * Did you install docker?"
+     echo ":    Please visit https://docs.docker.com/get-docker/"
+     echo ":"
+     echo ":  * Are you running 'Docker Desktop', 'docker daemon' or similar solution?"
+     echo ":    Please visit https://docs.docker.com/"
      echo ""
      exit
 fi
@@ -50,12 +62,6 @@ fi
 #
 # for each argument, try to execute it
 #
-
- DOCKER_PREFIX_NAME=docker
-#DOCKER_PREFIX_NAME=docker-node
-#DOCKER_PREFIX_NAME=docker_node
-#DOCKER_PREFIX_NAME=$(basename $(pwd))"-node"
-#DOCKER_PREFIX_NAME=$(basename $(pwd))"_node"
 
 while (( "$#" ))
 do
@@ -70,17 +76,22 @@ do
 		    exit
 		fi
 
+		HOST_UID=$(id -u)
+		HOST_GID=$(id -g)
+
 		# Build image
-		echo "Building image..."
-		docker image build -q -t ws -f docker/ws-dockerfile .
+		echo "Building image (it may take a while)..."
+		cd docker
+		docker image build -q -t ws --build-arg UID=$HOST_UID --build-arg GID=$HOST_GID -f ws-dockerfile .
+		cd ..
 
 		# Build tester (just in case)
 		mkdir -p tester
-		chown -R $(id -un):$(id -gn) tester
+		chown -R $HOST_UID:$HOST_GID tester
 
 		# Start container cluster (single node)
 		echo "Building container..."
-		docker compose -f docker/ws-dockercompose.yml up -d --scale node=1
+		HOST_UID=$HOST_UID HOST_GID=$HOST_GID docker compose -f docker/ws-dockercompose.yml up -d --scale node=1
 		if [ $? -gt 0 ]; then
 		    echo ": The docker compose command failed to spin up containers."
 		    echo ": * Did you execute git clone https://github.com/acaldero/wepsim_tester.git?."
@@ -106,7 +117,7 @@ do
 	     stop)
 		# Stopping containers
 		echo "Stopping containers..."
-		docker compose -f docker/ws-dockercompose.yml down
+		HOST_UID=$HOST_UID HOST_GID=$HOST_GID docker compose -f docker/ws-dockercompose.yml down
 		if [ $? -gt 0 ]; then
 		    echo ": The docker compose command failed to stop containers."
 		    echo ": * Did you execute git clone https://github.com/acaldero/wepsim_tester.git?."
@@ -134,7 +145,7 @@ do
 
 	     help)
 		echo ""
-		echo "  WepSIM Tester on Docker (v1.0) "
+		echo "  WepSIM Tester on Docker ($WSSH_VER) "
 		echo " --------------------------------"
 		echo ""
 		echo "  Usage: $0 <action> [<options>]"

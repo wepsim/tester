@@ -1,16 +1,47 @@
-ARG UBUNTU_VERSION=22.04
+ARG UBUNTU_VERSION=24.04
 FROM ubuntu:${UBUNTU_VERSION} AS base
+
+ARG UID
+ARG GID
 
 ENV DEBIAN_FRONTEND=noninteractive 
 
-# Base software
-COPY scripts/install.sh .
-RUN chmod a+x install.sh
-RUN ./install.sh
+# Install dependencies
+RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
+        aptitude apt-utils \
+        zlib1g-dev ca-certificates pkg-config \
+        software-properties-common gpg-agent \
+        curl libcurl3-dev \
+        wget rsync \
+        sudo lshw \
+        vim lynx git less \
+        \
+        nasm \
+        man-db doxygen \
+        htop lsof \
+        \
+        inetutils-ping \
+        netcat-traditional \
+        nmap net-tools hping3 \
+        iftop nload \
+        \
+        kmod \
+        \
+        libtool \
+	rpcbind \
+	libjson-c-dev \
+        jq \
+        \
+        zip unzip p7zip p7zip-full unrar p7zip-rar \
+        \
+        yamllint \
+        ubuntu-restricted-extras \
+        imagemagick \
+        && \
+    apt-get clean
 
 # tzdata: Configure region
 RUN echo "Europe/Madrid" > /etc/timezone
-#RUN dpkg-reconfigure -f noninteractive tzdata
 
 # OpenSSH: Install
 RUN apt-get install -y --no-install-recommends openssh-client openssh-server
@@ -28,18 +59,23 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
 RUN ssh-keygen -q -t rsa -N "" -f /root/.ssh/id_rsa
 RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
+# WepSIM software
+COPY ./wepsim-install.sh /tmp
+RUN chmod a+x /tmp/wepsim-install.sh
+RUN /tmp/wepsim-install.sh /opt/wepsim
+
 # tester directory on runtime
-RUN echo ''                      >> /root/.bashrc
-RUN echo '/work/scripts/boot.sh' >> /root/.bashrc
-RUN echo ''                      >> /root/.bashrc
+RUN echo ''                              >> /root/.bashrc
+RUN echo '/work/docker/ws-dockerbash.sh' >> /root/.bashrc
+RUN echo ''                              >> /root/.bashrc
+
+# container start-up
+RUN mkdir -p /srv
+COPY ./ws-dockerstart.sh /srv
 
 # Initial env
 RUN echo 'root:wepsim' | chpasswd
 WORKDIR "/work/tester"
-
-# container start-up
-RUN mkdir -p /srv
-COPY docker/ws-dockerstart.sh /srv
 
 EXPOSE 22
 CMD ["/srv/ws-dockerstart.sh"]
