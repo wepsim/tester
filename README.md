@@ -73,10 +73,12 @@
    ```console
    firefox http://localhost:8000/report-p2-90.html
    ```
+
    The following image is an example of report generated:
-<p align="center">
-    <img src="docs/report-90.png" alt="Example of report for group 90" width="300">
-</p>
+   <p align="center">
+     <img src="docs/report-90.png" alt="Example of report for group 90" width="500">
+   </p>
+   
    Main parts:
    * (1) Summary of all tests.
    * (2) Microcode only.
