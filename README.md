@@ -34,7 +34,7 @@
 1. The typical steps for the example group 90 are (submissions packed in the p2-90.zip file):
    ```console
    ./ws.sh start                                   : step 1: To spin up the container
-    cd /work/tester                                : step 2: Go to the tester directory
+    cd /work/results                               : step 2: Go to the results directory
    ./s10_unzip.sh  p2-90.zip                       : step 3: To unzip the submitted files at p2-90.zip
    ./s10_tests.sh      tests/tests.in              : step 4: To get the execution output to compare with
    ./s20_check.sh  ES  tests/tests.in   p2-90.in   : step 5: To check only the 90 group.

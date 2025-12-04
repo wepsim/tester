@@ -3,7 +3,6 @@
 # WepSIM (https://wepsim.github.io/wepsim/)
 #
 
-# Begin
 
 begin
 {
@@ -21,17 +20,10 @@ begin
 }
 
 
-# li: load immediate value
-li reg val {
-     co=111111,
-     nwords=1,
-     reg=reg(25,21),
-     val=imm(20,0),
-     help='r1 = SignExt(val)',
-     {
-          (SE=1, OFFSET=0, SIZE=10100, T3=1, LC=1, MR=0, SELC=10101, A0=1, B=1, C=0)
-     }
-}
+################################################################################
+#
+# <TODO: replace this section with the base material of your laboratory>
+#
 
 # rdcyle: read cycles from internal control register
 rdcycle reg1  {
@@ -72,186 +64,19 @@ out reg val {
      }
 }
 
-# add: add two registers
-add reg1 reg2 reg3 {
-      co=111111,
-      nwords=1,
-      reg1=reg(25,21),
-      reg2=reg(20,16),
-      reg3=reg(15,11),
-      help='r1 = r2 + r3',
-      {
-          (MC=1, MR=0, SELA=1011, SELB=10000, MA=0, MB=0, SELCOP=1010, T6=1, SELC=10101, LC=1, SELP=11, M7, C7, A0=1, B=1, C=0)
-      }
-}
+#
+# </TODO: replace this section with the base material of your laboratory>
+#
+################################################################################
 
-# addi: add register with immediate value
-addi reg1 reg2 val {
-         co=111111,
-         nwords=1,
-         reg1 = reg(25,21),
-         reg2 = reg(20,16),
-         val  = imm(15,0),
-         help ='r1 = r2 + val',
-         {
-             (SE=1, OFFSET=0, SIZE=10000, T3=1, C4=1),
-             (MC=1, MR=0, SELB=10000, MA=1, MB=0, SELCOP=1010, T6=1, SELC=10101, LC=1, SELP=11, M7, C7, A0=1, B=1, C=0)
-         }
-}
 
-# sub: substract two registers
-sub reg1 reg2 reg3 {
-      co=111111,
-      nwords=1,
-      reg1=reg(25,21),
-      reg2=reg(20,16),
-      reg3=reg(15,11),
-      help='r1 = r2 - r3',
-      {
-          (MC=1, MR=0, SELB=1011, SELA=10000, MA=0, MB=0, SELCOP=1011, T6=1, SELC=10101, LC=1, SELP=11, M7, C7, A0=1, B=1, C=0)
-      }
-}
+################################################################################
+#
+# <TODO: replace this section with the extra material of your laboratory>
+#
 
-# mul: multiply two registers
-mul reg1 reg2 reg3 {
-      co=111111,
-      nwords=1,
-      reg1=reg(25,21),
-      reg2=reg(20,16),
-      reg3=reg(15,11),
-      help='reg1 = reg2 * reg3',
-      {
-          (MC=1, MR=0, SELA=1011, SELB=10000, MA=0, MB=0, SELCOP=1100, T6=1, SELC=10101, LC=1, SELP=11, M7, C7, A0=1, B=1, C=0)
-      }
-}
-
-# and: bitwise and with values from two registers
-and reg1 reg2 reg3 {
-     co=111111,
-     nwords=1,
-     reg1=reg(25,21),
-     reg2=reg(20,16),
-     reg3=reg(15,11),
-     help='r1 = r2 & r3',
-     {
-          (MC=1, MR=0, SELA=1011, SELB=10000, MA=0, MB=0, SELCOP=1, T6=1, SELC=10101, LC=1, SELP=11, M7, C7, A0=1, B=1, C=0)
-     }
-}
-
-# lb: load byte from memory
-lb reg1 (reg2) {
-     co=111111,
-     nwords=1,
-     reg1 = reg(25,21),
-     reg2 = reg(20,16),
-     help='r1 = MEM[r2]/8',
-     {
-          (MR=0, SELA=10000, T9=1, C0),
-          (TA=1, R=1, BW=00, SE=1, M1=1, C1=1),
-          (T1=1, LC=1, MR=0, SELC=10101, SE=1, A0=1, B=1, C=0)
-     }
-}
-
-# sb: store byte to memory
-sb reg1 (reg2) {
-         co=111111,
-         nwords=1,
-         reg1 = reg(25,21),
-         reg2 = reg(20,16),
-         {
-             (MR=0,  SELA=10000, T9=1, C0=1),
-             (MR=0,  SELA=10101, T9=1, M1=0, C1=1),
-             (BW=0,  TA=1, TD=1, W=1,  A0=1, B=1, C=0)
-         }
-}
-
-#  lw: load word from memory 
-lw rd offset(rs1) {
-      co=010010,
-      nwords=1,
-      rd=reg(25,21),
-      offset=imm(15,0),
-      rs1=reg(20,16),
-      help='rd = (MEM[rs1+offset+3] .. MEM[rs1+offset])',
-      {
-          (SE=1, OFFSET=0, SIZE=10000, T3=1, C5=1),
-          (MR=0, SELA=10000, MA=0, MB=1, MC=1, SELCOP=1010, T6=1, C0=1),
-          (TA=1, R=1, BW=11, M1=1, C1=1),
-          (T1=1, LC=1, MR=0, SELC=10101, A0=1, B=1, C=0)
-      }
-}
-
-#  sw: store word to memory
-sw reg1 val(reg2) {
-      co=010111,
-      nwords=1,
-      reg1 = reg(25,21),
-      val  = imm(15,0),
-      reg2 = reg(20,16),
-      help='MEM[rs1+offset+3 .. rs1+offset] = rs2',
-      {
-          (SE=1, OFFSET=0, SIZE=10000, T3=1, C5=1),
-          (MR=0, SELA=10000, MA=0, MB=1, MC=1, SELCOP=1010, T6=1, C0=1),
-          (MR=0,  SELA=10101, T9=1, M1=0, C1=1),
-          (BW=11, TA=1, TD=1, W=1,  A0=1, B=1, C=0)
-      }
-}
-
-# beq: branch if equal value in two registers
-beq reg reg offset {
-     co=111111,
-     nwords=1,
-     reg=reg(25,21),
-     reg=reg(20,16),
-     offset=address(15,0)rel,
-     help='if ($r1 == $r2) pc += 4*offset',
-     {
-             (T8, C5),
-             (SELA=10101, SELB=10000, MC=1, SELCOP=1011, SELP=11, M7, C7),
-             (A0=0, B=1, C=110, MADDR=bck2ftch),
-             (T5, M7=0, C7),
-             (T2, C5),
-             (SE=1, OFFSET=0, SIZE=10000, T3, C4),
-             (MA=1, MB=10, MC=1, SELCOP=1100, T6, C4),
-             (MA=1, MB=1, MC=1, SELCOP=1010, T6, C2, A0=1, B=1, C=0),
-   bck2ftch: (T5, M7=0, C7),
-             (A0=1, B=1, C=0)
-     }
-}
-
-sret
-{
-     co=111111,
-     nwords=1,
-     {
-         # pop SR
-         (MR=1, SELA=10, T9, C0),
-         (MR=1, SELA=10, MA=0, MB=10, MC=1, SELCOP=1010, T6=1, SELC=10, LC=1),
-         (TA=1, R=1, BW=11, M1=1, C1),
-         (T1=1, M7=0, C7),
-
-         # pop PC
-         (MR=1, SELA=10, T9, C0),
-         (MR=1, SELA=10, MA=0, MB=10, MC=1, SELCOP=1010, T6=1, SELC=10, LC=1),
-         (TA=1, R=1, BW=11, M1=1, C1),
-         (T1=1, M2=0, C2, A0=1, B=1 ,C=0)
-     }
-}
-
-la r1 u32
-{
-     co=111111,
-     nwords=2,
-     r1=reg(25,21),
-     u32=inm(63,32),
-     {
- 	 (T2, C0),
- 	 (TA, R, BW=11, M1=1, C1=1),
-	 (M2, C2, T1, LC=1, MR=0, SELC=10101, A0=1, B=1, C=0)
-     }
-}
-
-halt
+# halt execution
+x_halt
 {
      co=111111,
      nwords=1,
@@ -260,4 +85,9 @@ halt
          (MR=1, SELA=0, T9,   M2=0, C2, SELC=10, LC=1, A0=1, B=1, C=0)
      }
 }
+
+#
+# </TODO: replace this section with the extra material of your laboratory>
+#
+################################################################################
 

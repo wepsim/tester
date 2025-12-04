@@ -29,7 +29,7 @@ if [ $# -lt 2 ]; then
     echo "  * NOTE: please you must avoid install_path be the same than the base_path"
     echo ""
     echo " Example:"
-    echo "  $0 /work /opt/wepsim /work/tester"
+    echo "  $0 /work /opt/wepsim /work/results"
     echo ""
     exit
 fi
@@ -39,7 +39,7 @@ WEPSIM_PATH=$2
 INSTALL_PATH=$3
 
 
-# 1) To prepare tester
+# 1) To prepare results
 mkdir -p                $INSTALL_PATH
 pushd . >& /dev/null
 

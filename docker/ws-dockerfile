@@ -64,7 +64,7 @@ COPY ./wepsim-install.sh /tmp
 RUN chmod a+x /tmp/wepsim-install.sh
 RUN /tmp/wepsim-install.sh /opt/wepsim
 
-# tester directory on runtime
+# results directory on runtime
 RUN echo ''                              >> /root/.bashrc
 RUN echo '/work/docker/ws-dockerbash.sh' >> /root/.bashrc
 RUN echo ''                              >> /root/.bashrc
@@ -75,7 +75,7 @@ COPY ./ws-dockerstart.sh /srv
 
 # Initial env
 RUN echo 'root:wepsim' | chpasswd
-WORKDIR "/work/tester"
+WORKDIR "/work/results"
 
 EXPOSE 22
 CMD ["/srv/ws-dockerstart.sh"]

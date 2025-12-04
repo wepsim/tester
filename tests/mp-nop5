@@ -1,0 +1,6 @@
+
+.text
+main:
+      nop5
+      x_halt
+

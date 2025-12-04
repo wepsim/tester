@@ -82,12 +82,12 @@ do
 		# Build image
 		echo "Building image (it may take a while)..."
 		cd docker
-		docker image build -q -t ws --build-arg UID=$HOST_UID --build-arg GID=$HOST_GID -f ws-dockerfile .
+		docker image build -t ws --build-arg UID=$HOST_UID --build-arg GID=$HOST_GID -f ws-dockerfile .
 		cd ..
 
 		# Build tester (just in case)
-		mkdir -p tester
-		chown -R $HOST_UID:$HOST_GID tester
+		mkdir -p results
+		chown -R $HOST_UID:$HOST_GID results
 
 		# Start container cluster (single node)
 		echo "Building container..."

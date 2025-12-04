@@ -1,6 +1,7 @@
 
+################################################################################
 #
-# Register naming
+# <TODO: replace this section with the register naming for your laboratory>
 #
 
 registers
@@ -38,4 +39,9 @@ registers
     30=(t5,   x30),
     31=(t6,   x31)
 }
+
+#
+# </TODO: replace this section with the register naming for your laboratory>
+#
+################################################################################
 

@@ -22,9 +22,9 @@
 
 
 # tester
-/work/docker/tester-install.sh  /work  /opt/wepsim  /work/tester
-chown -R $HOST_UID:$HOST_GID                        /work/tester >& /dev/null
+/work/docker/tester-install.sh  /work  /opt/wepsim  /work/results
+chown -R $HOST_UID:$HOST_GID                        /work/results >& /dev/null
 
 # help
-/work/tester/help.sh
+/work/results/help.sh
 
