@@ -66,6 +66,27 @@
     # modifications_<bundle>.csv — structured CSV grouped by student ID
 ##
 
+fix_checkpoint() {
+    local fname="$1"
+    [ -f "$fname" ] || return
+    if ! grep -q '^{' "$fname" || ! grep -q '"metadata"' "$fname"; then
+	echo "     X -> Invalid checkpoint '$fname', regenerating..."
+	log_error "$dirbase" "Invalid JSON checkpoint → regenerated: $fname"
+	touch /tmp/empty.asm
+	(cd /work/results && ./wepsim.sh -a build-checkpoint -m ep -f "$d/$fname" -s /tmp/empty.asm > "$d/${fname}.new")
+	mv "$(pwd)/${fname}.new" "$fname"
+    fi
+}
+
+log_error() {
+    local id="$1"
+    local msg="$2"
+
+    # Append a newline + message to this student's entry
+    ERRORS_MAP["$id"]+="$msg"$'\n'
+}
+
+
 # Welcome
 echo ""
 echo "s10_unzip"
@@ -82,20 +103,13 @@ if [ $# -lt 1 ]; then
      exit
 fi
 
-
+# Initialize variables
 BUNDLE="$1"
 DIR_OUTPUT="$(pwd)/modifications_${BUNDLE%.zip}.txt"
 CSV_OUTPUT="$(pwd)/modifications_${BUNDLE%.zip}.csv"
 rm -f "$DIR_OUTPUT" "$CSV_OUTPUT" #delete if exists
 
 declare -A ERRORS_MAP
-log_error() {
-    local id="$1"
-    local msg="$2"
-
-    # Append a newline + message to this student's entry
-    ERRORS_MAP["$id"]+="$msg"$'\n'
-}
 
 # Determine if input is text list or zip bundle
 ARG_TYPE=$(file -b "$BUNDLE")
@@ -138,11 +152,9 @@ if [ "$ARG_TYPE" != "ASCII text" ]; then
             unrar x -o+ "$f" "$dir/" >/dev/null
             ;;
         esac
-
     done
 
     # Rebuild the .in list
-    #ls -1 "$BASE_DIR" | sed 's/\.zip$//' | sort | uniq > "$BASE_DIR.in"
     ls -1 "$BASE_DIR"/ | sed 's/\.rar$//' |  sed 's/\.zip$//' | xargs -n1 basename | sort | uniq > "$BASE_DIR.in"
 else
     BASE_DIR="${BUNDLE%.in}"
@@ -227,20 +239,7 @@ for d in "$BASE_DIR"/*/; do
             log_error "$dirbase" "Renamed report.pdf: $f → report.pdf"
         fi
 
-        ##############################
         # Validate checkpoint content
-        ##############################
-        fix_checkpoint() {
-            local fname="$1"
-            [ -f "$fname" ] || return
-            if ! grep -q '^{' "$fname" || ! grep -q '"metadata"' "$fname"; then
-                echo "     X -> Invalid checkpoint '$fname', regenerating..."
-                log_error "$dirbase" "Invalid JSON checkpoint → regenerated: $fname"
-                (cd /work/tester && ./wepsim.sh -a build-checkpoint -m ep -f "$d/$fname" -s /tmp/empty.asm > "$d/${fname}.new")
-                mv "$(pwd)/${fname}.new" "$fname"
-            fi
-        }
-
         fix_checkpoint e1_checkpoint.txt
         fix_checkpoint e2_checkpoint.txt
 
@@ -291,3 +290,4 @@ for id in "${!ERRORS_MAP[@]}"; do
 done
 
 echo "CSV generated: $CSV_OUTPUT"
+
