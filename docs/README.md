@@ -30,17 +30,30 @@
 
 ### 2. To check one group for the first time
 
-
 1. The typical steps for the example group 90 are (submissions packed in the p2-90.zip file):
    ```console
-   ./ws.sh start                                   : step 1: To spin up the container
+   ./ws.sh start                                   : step 1: To spin up one container
     cd /work/results                               : step 2: Go to the results directory
    ./s10_unzip.sh  p2-90.zip                       : step 3: To unzip the submitted files at p2-90.zip
    ./s10_tests.sh      tests/tests.in              : step 4: To get the execution output to compare with
    ./s20_check.sh  ES  tests/tests.in   p2-90.in   : step 5: To check only the 90 group.
     lynx report-p2-90.html                         : step 6: To open the associated report within the container
-   ./ws.sh stop                                    : step 7: To spin down the container.
+    exit                                           : step 7: To exit the container
+   ./ws.sh stop                                    : step 8: To spin down the container.
    ```
+
+   The following image is an example of report generated:
+   <p align="center">
+     <img src="docs/report-90.png" alt="Example of report for group 90" width="500">
+   </p>
+
+   Main parts:
+   * (1) Summary of all tests.
+   * (2) Microcode only.
+   * (3) Assembly only.
+   * (4) Link to the directory with all submitted files.
+   * (5) Links to the assembly code with the corresponding tests executed.
+   * (6) Result of a particular test for one particular group.
 
 <details>
 <summary>More detailed...</summary>
@@ -57,7 +70,7 @@
 
 3. To prepare the execution output to compare with:
    ```console
-   ./s10_tests.sh      tests/tests.in   
+   ./s10_tests.sh      tests/tests.in
    ```
 
 4. To check only the 90 group:
@@ -73,17 +86,6 @@
    ```console
    firefox http://localhost:8000/report-p2-90.html
    ```
-   The following image is an example of report generated:
-<p align="center">
-    <img src="report-90.png" alt="Example of report for group 90" width="300">
-</p>
-   Main parts:
-   * (1) Summary of all tests.
-   * (2) Microcode only.
-   * (3) Assembly only.
-   * (4) Link to the directory with all submitted files.
-   * (5) Links to the assembly code with the corresponding tests executed.
-   * (6) Result of a particular test for one particular group.
 
 6. Finally, you can spin down the container:
    ```console

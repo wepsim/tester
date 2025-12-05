@@ -39,17 +39,22 @@ WEPSIM_PATH=$2
 INSTALL_PATH=$3
 
 
-# 1) To prepare results
+# 1) To prepare the results directory
 mkdir -p                $INSTALL_PATH
-pushd . >& /dev/null
 
+# copy tests, scripts, and submissions
+pushd . >& /dev/null
 cd $SOURCE_PATH
 cp -a ./tests           $INSTALL_PATH/tests
 cp -a ./scripts/*       $INSTALL_PATH/
 cp -a ./submissions/*   $INSTALL_PATH/
 popd >& /dev/null
 
-cp -a $WEPSIM_PATH      $INSTALL_PATH/wepsim
-rm -fr                                 $INSTALL_PATH/wepsim.sh
-ln -s  $INSTALL_PATH/wepsim/wepsim.sh  $INSTALL_PATH/wepsim.sh
+# copy wepsim and rebuild the wepsim.sh link
+pushd . >& /dev/null
+cd $INSTALL_PATH
+cp -a $WEPSIM_PATH       ./wepsim
+rm -fr                   ./wepsim.sh
+ln -s ./wepsim/wepsim.sh ./wepsim.sh
+popd >& /dev/null
 
