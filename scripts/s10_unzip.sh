@@ -82,10 +82,11 @@ fix_checkpoint() {
 	 touch /tmp/empty.asm
 	 mkdir -p     ./ORIGINAL
 	 mv ${FNAME}  ./ORIGINAL
-	 ./wepsim.sh -a build-checkpoint -m ep -f "./ORIGINAL/${FNAME}" -s /tmp/empty.asm > ${FNAME}
+	 ../../wepsim.sh -a build-checkpoint -m ep -f "./ORIGINAL/${FNAME}" -s /tmp/empty.asm > ${FNAME}
     fi
 
     rm -fr ${MFNAME}
+	rm -fr /tmp/empty.asm
 }
 
 dump_logged_errors() {
