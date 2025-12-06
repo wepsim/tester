@@ -38,7 +38,7 @@ function e2_get_microcode {
     cp ${BASE_DIR_A}/e2_checkpoint.txt ${REPORT_DIR_A}/e2_checkpoint_ascii.txt
 
     # get microcode from checkpoint
-    ./wepsim.sh --maxi 10000 -a show-microcode -c ${REPORT_DIR_A}/e2_checkpoint_ascii.txt > ${REPORT_DIR_A}/e2_mc_ascii.txt
+    ./wepsim.sh -a show-microcode -c ${REPORT_DIR_A}/e2_checkpoint_ascii.txt > ${REPORT_DIR_A}/e2_mc_ascii.txt
 
     # if syntax error -> error
     if grep -q "SyntaxError" ${REPORT_DIR_A}/e2_mc_ascii.txt; then
