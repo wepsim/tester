@@ -21,38 +21,38 @@
 #
 
 
-function e1_get_microcode {
+function e2_get_microcode {
       BASE_DIR_A=$1
     REPORT_DIR_A=$2
 
-    touch ${REPORT_DIR_A}/e1_checkpoint_ascii.txt
-    touch ${REPORT_DIR_A}/e1_mc_ascii.txt
+    touch ${REPORT_DIR_A}/e2_checkpoint_ascii.txt
+    touch ${REPORT_DIR_A}/e2_mc_ascii.txt
 
     # if no file -> error
-    if [ ! -f ${BASE_DIR_A}/e1_checkpoint.txt ]; then
+    if [ ! -f ${BASE_DIR_A}/e2_checkpoint.txt ]; then
          return 0
     fi
 
     # convert UTF8 to ASCII
-    ##/usr/bin/iconv --from-code UTF-8 --to-code US-ASCII -c ${BASE_DIR_A}/e1_checkpoint.txt > ${REPORT_DIR_A}/e1_checkpoint_ascii.txt
-    cp ${BASE_DIR_A}/e1_checkpoint.txt ${REPORT_DIR_A}/e1_checkpoint_ascii.txt
+    #/usr/bin/iconv --from-code UTF-8 --to-code US-ASCII -c $1/e2_checkpoint.txt > $2/e2_checkpoint_ascii.txt
+    cp ${BASE_DIR_A}/e2_checkpoint.txt ${REPORT_DIR_A}/e2_checkpoint_ascii.txt
 
     # get microcode from checkpoint
-    ./wepsim.sh --maxi 10000 -a show-microcode -c ${REPORT_DIR_A}/e1_checkpoint_ascii.txt > ${REPORT_DIR_A}/e1_mc_ascii.txt
+    ./wepsim.sh --maxi 10000 -a show-microcode -c ${REPORT_DIR_A}/e2_checkpoint_ascii.txt > ${REPORT_DIR_A}/e2_mc_ascii.txt
 
     # if syntax error -> error
-    if grep -q "SyntaxError" ${REPORT_DIR_A}/e1_mc_ascii.txt; then
+    if grep -q "SyntaxError" ${REPORT_DIR_A}/e2_mc_ascii.txt; then
        return 0
     fi
 
     # rename base microcode instructions (rdcycle, in, out, ...)...
-    mv  ${REPORT_DIR_A}/e1_mc_ascii.txt ${REPORT_DIR_A}/e1_mc_ascii_step1_submitted.txt
+    mv  ${REPORT_DIR_A}/e2_mc_ascii.txt ${REPORT_DIR_A}/e2_mc_ascii_step1_submitted.txt
     sed -e 's/rdcycle /tmp_rdcycle /g' \
         -e 's/in /tmp_in /g' \
         -e 's/out /tmp_out /g' \
         -e 's/bck2ftch/bck2ftchX/g' \
-        ${REPORT_DIR_A}/e1_mc_ascii_step1_submitted.txt > ${REPORT_DIR_A}/e1_mc_ascii_step2_clean.txt
-     cp ${REPORT_DIR_A}/e1_mc_ascii_step2_clean.txt       ${REPORT_DIR_A}/e1_mc_ascii.txt
+        ${REPORT_DIR_A}/e2_mc_ascii_step1_submitted.txt > ${REPORT_DIR_A}/e2_mc_ascii_step2_clean.txt
+     cp ${REPORT_DIR_A}/e2_mc_ascii_step2_clean.txt       ${REPORT_DIR_A}/e2_mc_ascii.txt
 
     return 1
 }
@@ -60,7 +60,7 @@ function e1_get_microcode {
 
 # Welcome
 echo ""
-echo "s20_check_e1"
+echo "s20_check_e2"
 echo "------------"
 
 # 1) Test parameters...
@@ -86,13 +86,12 @@ LIST_A=$(cat $2)
 BASE_DIR=$(echo $2 | sed 's/\.in//g')
 
 REPORT_DIR="report-"$BASE_DIR
-REPORT_CSV="report-"$BASE_DIR"-e1.csv"
+REPORT_CSV="report-"$BASE_DIR"-e2.csv"
 REPORT=report.pdf
 AUTHORS=authors.txt
-E1_CHECKPOINT_NAME=e1_checkpoint.txt
+E2_CHECKPOINT_NAME=e2_checkpoint.txt
 
 # Report: dir + file
-rm    -fr $REPORT_DIR
 mkdir -p  $REPORT_DIR
 rm    -fr $REPORT_CSV
 
@@ -101,7 +100,7 @@ rm    -fr $REPORT_CSV
 for A in $LIST_A; do
 
     echo  ""
-    echo  "$A: ................................... EJ1 ...................................... "
+    echo  "$A: ...................................... EJ2 ...................................... "
 
     mkdir -p $REPORT_DIR/$A
     mkdir -p $REPORT_DIR/$A/output
@@ -109,7 +108,7 @@ for A in $LIST_A; do
 
     # 3.1) Check submitted OK
     ## check ok naming
-    if [ -f $BASE_DIR/$A/$E1_CHECKPOINT_NAME -a \
+    if [ -f $BASE_DIR/$A/$E2_CHECKPOINT_NAME -a \
          -f $BASE_DIR/$A/$REPORT             -a \
          -f $BASE_DIR/$A/$AUTHORS ]; then
        EOK=1
@@ -122,7 +121,7 @@ for A in $LIST_A; do
     fi
 
     ## checking input file,  convert utf-8 <-> ascii, etc.
-    e1_get_microcode $BASE_DIR/$A $REPORT_DIR/$A
+    e2_get_microcode $BASE_DIR/$A $REPORT_DIR/$A
     if [ $? -eq 0 ]; then
        EOK=0
     fi
@@ -141,30 +140,49 @@ for A in $LIST_A; do
     C=""
     U=""
 
-    # build test-mC-e1
-    cat $TEST_DIR/check-mc-part1         > $REPORT_DIR/$A/test-mc-e1.txt
-    cat $REPORT_DIR/$A/e1_mc_ascii.txt  >> $REPORT_DIR/$A/test-mc-e1.txt
-    cat $TEST_DIR/check-mc-part2        >> $REPORT_DIR/$A/test-mc-e1.txt
+    # build test-mC-e2
+    cat $TEST_DIR/check-mc-part1    > $REPORT_DIR/$A/test-mc-e2.txt
+    cat $TEST_DIR/check-mc         >> $REPORT_DIR/$A/test-mc-e2.txt
+    cat $TEST_DIR/check-mc-part2   >> $REPORT_DIR/$A/test-mc-e2.txt
 
-    for I in $LIST_I; do
+    # make e2-mc1
+    ./wepsim.sh -a show-microcode -c  $REPORT_DIR/$A/e2_checkpoint_ascii.txt > $REPORT_DIR/$A/e2_microcode.txt
 
-           # build test-mP-e1
-           cat $TEST_DIR/check-mp-part1   $TEST_DIR/mp-$I   > $REPORT_DIR/$A/test-mp-$I.txt
+    # make e2-mp1
+    ./wepsim.sh -a show-assembly  -c  $REPORT_DIR/$A/e2_checkpoint_ascii.txt > $REPORT_DIR/$A/e2_assembly.txt
 
-           # check test-mC-e1 test-mP-e1
-     echo " ./wepsim.sh --maxi 10000 -a check -m ep -f $REPORT_DIR/$A/test-mc-e1.txt -s $REPORT_DIR/$A/test-mp-$I.txt -r $TEST_DIR/base/out-$I.txt  > $REPORT_DIR/$A/output/out-$I.txt"
-            ./wepsim.sh --maxi 10000 -a check -m ep -f $REPORT_DIR/$A/test-mc-e1.txt -s $REPORT_DIR/$A/test-mp-$I.txt -r $TEST_DIR/base/out-$I.txt  > $REPORT_DIR/$A/output/out-$I.txt
+    # make microcode fields list...
+    ./wepsim.sh -a show-microcode-fields --checkpoint $TEST_DIR/check-checkpoint-riscv.txt   > $REPORT_DIR/$A/test-mc-fields.txt
+    awk '/^call: \[/,/\]/' $REPORT_DIR/$A/test-mc-fields.txt > /tmp/kk.txt
+    mv /tmp/kk.txt $REPORT_DIR/$A/test-mc-fields.txt
 
-           # score
-           SCORE=0
-           if grep -q "OK" $REPORT_DIR/$A/output/out-$I.txt; then
-               SCORE=1
-           fi
+    ./wepsim.sh -a show-microcode-fields --checkpoint $REPORT_DIR/$A/e2_checkpoint_ascii.txt > $REPORT_DIR/$A/e2-mc-fields.txt
+    awk '/^call: \[/,/\]/' $REPORT_DIR/$A/e2-mc-fields.txt > /tmp/kk.txt
+    mv /tmp/kk.txt $REPORT_DIR/$A/e2-mc-fields.txt
 
-	   C+="Score $I;"
-           U+="\t$SCORE;"
+    # check if OK field list
+    FIELD_SCORE=1
+    diff $REPORT_DIR/$A/test-mc-fields.txt $REPORT_DIR/$A/e2-mc-fields.txt | grep "imm"      > $REPORT_DIR/$A/e2-mc-fields-ko.txt
+    ##if grep -q "imm" $REPORT_DIR/$A/e2-mc-fields-ko.txt
+    ##then
+    ##   FIELD_SCORE=0
+    ##fi
 
-    done
+    # run e2-mc1 e2-mp1
+    echo "Original microcode:"                                                                                                    > $REPORT_DIR/$A/output/out-e2-t1.txt
+ 	    ./wepsim.sh --maxc 2000 --maxi 10000 -a run -m ep -f $REPORT_DIR/$A/test-mc-e2.txt -s $REPORT_DIR/$A/e2_assembly.txt >> $REPORT_DIR/$A/output/out-e2-t1.txt
+    echo "  ./wepsim.sh --maxc 2000 --maxi 10000 -a run -m ep -f $REPORT_DIR/$A/test-mc-e2.txt -s $REPORT_DIR/$A/e2_assembly.txt >> $REPORT_DIR/$A/output/out-e2-t1.txt"
+
+    # score
+    SCORE=1
+    if grep -q "ERROR" $REPORT_DIR/$A/output/out-e2-t1.txt
+    then
+       SCORE=0
+    fi
+
+    C+="Score e2-t1;"
+    U+="\t$SCORE;"
+
 
     ## 3.3) General report as CSV
     O=""
@@ -175,14 +193,16 @@ for A in $LIST_A; do
         O+="$AAI;"
 	H+="Group;"
         O+="$A;"
-	H+="Summary;"
-        O+="\t$REPORT_DIR/$A/$A.html;"
-	H+="mcode;"
-        O+="$REPORT_DIR/$A/e1_mc_ascii.txt;"
 	H+="Submission;"
         O+="\t$BASE_DIR/$A/;"
+	H+="Assembly;"
+        O+="\t$REPORT_DIR/$A/e2_assembly.txt;"
 	H+="Submission code;"
         O+="$EOK;"
+	H+="Fields file;"
+        O+="$REPORT_DIR/$A/e2-mc-fields-ko.txt;"
+	H+="Fields code;"
+        O+="$FIELD_SCORE;"
 
         H+="$C\n"
         O+="$U\n"
