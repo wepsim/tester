@@ -3,19 +3,19 @@
 
 #
 #   Copyright 2015-2026 Felix Garcia Carballeira, Alejandro Calderon Mateos, Javier Prieto Cepeda, Saul Alonso Monsalve
-# 
+#
 #   This file is part of WepSIM (https://wepsim.github.io/wepsim/)
-# 
+#
 #   WepSIM is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Lesser General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-# 
+#
 #   WepSIM is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU Lesser General Public License for more details.
-# 
+#
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with WepSIM.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -54,7 +54,8 @@ function general_report_print_header {
     echo "<tr>"                                                     >> $REPORT_HTML
     # ej1
     for I in $RPH_LIST_I; do
-    echo "<td align=center><a href=tests/mp-$I>$I</a></td>"         >> $REPORT_HTML
+    cp  tests/mp-$I  tests/mp-${I}".txt"
+    echo "<td align=center><a href=tests/mp-${I}.txt>$I</a></td>"   >> $REPORT_HTML
     done
     # ej2
     echo "<td align=center>execution</td>"                          >> $REPORT_HTML
@@ -85,7 +86,7 @@ function get_data_from_csv {
 
     NE=$(echo "${#L[@]}")
 
-    for I in $(seq 1 $NE); do 
+    for I in $(seq 1 $NE); do
 	K=${H[$I]}
 	V=${L[$I]}
 	if [ ! -z "${K}" ]; then

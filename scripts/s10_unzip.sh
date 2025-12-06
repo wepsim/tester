@@ -58,6 +58,57 @@ log_error() {
     ERRORS_MAP["$id"]+="$msg"$'\n'
 }
 
+dump_logged_errors() {
+    DIR_OUTPUT="$(pwd)/modifications_${BUNDLE%.zip}.txt"
+    CSV_OUTPUT="$(pwd)/modifications_${BUNDLE%.zip}.csv"
+
+    #delete if exists
+    rm -f "$DIR_OUTPUT" "$CSV_OUTPUT"
+
+    # DIR_OUTPUT
+    echo ""                                          >> "$DIR_OUTPUT"
+    echo "========================================"  >> "$DIR_OUTPUT"
+    echo "         SUMMARY OF DETECTED ISSUES"       >> "$DIR_OUTPUT"
+    echo "========================================"  >> "$DIR_OUTPUT"
+
+    for id in "${!ERRORS_MAP[@]}"; do
+	# log to general file
+        echo "ID: $id"                               >> "$DIR_OUTPUT"
+        echo "${ERRORS_MAP[$id]}" | sed 's/^/  - /'  >> "$DIR_OUTPUT"
+        echo ""                                      >> "$DIR_OUTPUT"
+
+	# log group file
+	mkdir -p "$BASE_DIR"/"$id"/ORIGINAL
+        echo ""                                      >> "$BASE_DIR"/"$id"/ORIGINAL/submission-issues.txt
+        echo "${ERRORS_MAP[$id]}" | sed 's/^/  - /'  >> "$BASE_DIR"/"$id"/ORIGINAL/submission-issues.txt
+    done
+
+    # CSV_OUTPUT
+    echo "student_id,action" > "$CSV_OUTPUT"
+
+    for id in "${!ERRORS_MAP[@]}"; do
+	    first_row=true
+
+	    while IFS= read -r line; do
+		[[ -z "$line" ]] && continue
+
+		# Escape quotes for CSV
+		safe_line=$(echo "$line" | sed 's/"/""/g')
+
+		if $first_row; then
+		    # First line: include ID
+		    echo "$id,\"$safe_line\"" >> "$CSV_OUTPUT"
+		    first_row=false
+		else
+		    # Next lines: empty ID column
+		    echo ",\"$safe_line\"" >> "$CSV_OUTPUT"
+		fi
+	    done <<< "${ERRORS_MAP[$id]}"
+    done
+
+    echo "CSV generated: $CSV_OUTPUT"
+}
+
 fix_checkpoint() {
     local BASE_DIR="$1"
     local GROUP_DIR="$2"
@@ -86,60 +137,7 @@ fix_checkpoint() {
     fi
 
     rm -fr ${MFNAME}
-	rm -fr /tmp/empty.asm
-}
-
-dump_logged_errors() {
-    DIR_OUTPUT="$(pwd)/modifications_${BUNDLE%.zip}.txt"
-    CSV_OUTPUT="$(pwd)/modifications_${BUNDLE%.zip}.csv"
-
-    #delete if exists
-    rm -f "$DIR_OUTPUT" "$CSV_OUTPUT"
-
-    # DIR_OUTPUT
-    echo ""                                          >> "$DIR_OUTPUT"
-    echo "========================================"  >> "$DIR_OUTPUT"
-    echo "         SUMMARY OF DETECTED ISSUES"       >> "$DIR_OUTPUT"
-    echo "========================================"  >> "$DIR_OUTPUT"
-
-    for id in "${!ERRORS_MAP[@]}"; do
-	# log to general file 
-        echo "ID: $id"                               >> "$DIR_OUTPUT"
-        echo "${ERRORS_MAP[$id]}" | sed 's/^/  - /'  >> "$DIR_OUTPUT"
-        echo ""                                      >> "$DIR_OUTPUT"
-
-	# log group file 
-        echo ""                                      >> "$BASE_DIR"/"$id"/submission-issues.txt
-        echo "${ERRORS_MAP[$id]}" | sed 's/^/  - /'  >> "$BASE_DIR"/"$id"/submission-issues.txt
-    done
-
-    # CSV_OUTPUT
-    echo "student_id,action" > "$CSV_OUTPUT"
-
-    for id in "${!ERRORS_MAP[@]}"; do
-	    first_row=true
-
-	    while IFS= read -r line; do
-		[[ -z "$line" ]] && continue
-
-		# Escape quotes for CSV
-		safe_line=$(echo "$line" | sed 's/"/""/g')
-
-		if $first_row; then
-		    # First line: include ID
-		    echo "$id,\"$safe_line\"" >> "$CSV_OUTPUT"
-		    first_row=false
-		else
-		    # Next lines: empty ID column
-		    echo ",\"$safe_line\"" >> "$CSV_OUTPUT"
-		fi
-	    done <<< "${ERRORS_MAP[$id]}"
-
-	    # Optional blank line between groups
-	    #echo "," >> "$CSV_OUTPUT"
-    done
-
-    echo "CSV generated: $CSV_OUTPUT"
+    rm -fr /tmp/empty.asm
 }
 
 
@@ -176,6 +174,7 @@ if [ "$ARG_TYPE" != "ASCII text" ]; then
 
     # Normalize filenames in bundle
     for f in "$BASE_DIR"/*; do
+        # skip directories
         [ -f "$f" ] || continue
 
 	# gets the .zip file name
@@ -192,8 +191,9 @@ if [ "$ARG_TYPE" != "ASCII text" ]; then
 
 	# if .zip file name has been cleaned -> log detected problem and fix it
         if [ "$base" != "$clean" ]; then
-            echo " → Renaming submission: '$base' -> '$clean'"
+            echo " -> Renaming submission: '$base' -> '$clean'"
             log_error "${clean%.zip}" "Renamed submission: $base -> $clean"
+
             mv "$BASE_DIR/$base" "$BASE_DIR/$clean"
             f="$BASE_DIR/$clean"
         fi
@@ -206,6 +206,7 @@ if [ "$ARG_TYPE" != "ASCII text" ]; then
             dir="${dir%.zip}"       # remove .zip if present
             echo " -> Extracting RAR: $f -> $dir"
             log_error "$(basename "$dir")" "Extracted RAR: $f -> $dir"
+
             mkdir -p "$dir"
             unrar x -o+ "$f" "$dir/" >/dev/null
             ;;
@@ -233,12 +234,16 @@ while IFS= read -r A; do
 
     # Normalize nested directories inside submission
     for d in "$BASE_DIR/$A"/*/; do
+
+        # skip files
         [ -d "$d" ] || continue
+
         old=$(basename "$d")
         clean=$(echo "$old" | sed 's/_[ ]\+/_/g; s/[ ]\+_/_/g; s/[ ]//g')
         if [ "$old" != "$clean" ]; then
-            echo "  → Renaming broken directory: '$old' -> '$clean'"
+            echo "  -> Renaming broken directory: '$old' -> '$clean'"
             log_error "$clean" "Renaming broken directory: '$old' -> '$clean'"
+
             mv "$BASE_DIR/$A/$old" "$BASE_DIR/$A/$clean"
         fi
     done
@@ -249,12 +254,14 @@ while IFS= read -r A; do
         SUB="${SUBDIRS[0]}"
         echo " $A * Flattening nested folder: '$SUB' -> '$BASE_DIR/$A/'"
         log_error "$A" "Flattening nested folder: '$SUB' -> '$BASE_DIR/$A/'"
+
         for item in "$SUB"/* "$SUB"/.*; do
             base=$(basename "$item")
             [[ "$base" == "." || "$base" == ".." ]] && continue
             mv "$item" "$BASE_DIR/$A/" 2>/dev/null || true
         done
-        rmdir "$SUB" 2>/dev/null || true
+
+	mv $SUB "$BASE_DIR/$A/ORIGINAL"
     fi
 
     # Cleanup extra MACOS junk
@@ -279,29 +286,37 @@ for d in "$BASE_DIR"/*/; do
         #### authors.txt ####
         if ! [ -f authors.txt ]; then
             f=$(ls | grep -i 'author' | head -n 1)
-            [ -n "$f" ] && mv "$f" authors.txt && echo "          X -> authors: $f -> authors.txt"
             log_error "$dirbase" "Renamed authors.txt: $f -> authors.txt"
+	    echo "          X -> authors: $f -> authors.txt"
+
+            [ -n "$f" ] && mv "$f" authors.txt
         fi
 
         #### e1_checkpoint.txt ####
         if ! [ -f e1_checkpoint.txt ]; then
             f=$(ls | grep -Ei 'e1.*check' | head -n 1)
-            [ -n "$f" ] && mv "$f" e1_checkpoint.txt && echo "          X -> e1_checkpoint: $f -> e1_checkpoint.txt"
             log_error "$dirbase" "Renamed e1_checkpoint: $f -> e1_checkpoint.txt"
+	    echo "          X -> e1_checkpoint: $f -> e1_checkpoint.txt"
+
+            [ -n "$f" ] && mv "$f" e1_checkpoint.txt
         fi
 
         #### e2_checkpoint.txt ####
         if ! [ -f e2_checkpoint.txt ]; then
             f=$(ls | grep -Ei 'e2.*(check|chek)' | head -n 1)
-            [ -n "$f" ] && mv "$f" e2_checkpoint.txt && echo "          X -> e2_checkpoint: $f -> e2_checkpoint.txt"
             log_error "$dirbase" "Renamed e2_checkpoint: $f -> e2_checkpoint.txt"
+	    echo "          X -> e2_checkpoint: $f -> e2_checkpoint.txt"
+
+            [ -n "$f" ] && mv "$f" e2_checkpoint.txt
         fi
 
         #### report.pdf ####
         if ! [ -f report.pdf ]; then
             f=$(ls | grep -Ei '\.pdf$' | head -n 1)
-            [ -n "$f" ] && mv "$f" report.pdf && echo "          X -> report: -> report.pdf"
             log_error "$dirbase" "Renamed report.pdf: $f -> report.pdf"
+	    echo "          X -> report: -> report.pdf"
+
+            [ -n "$f" ] && mv "$f" report.pdf
         fi
 
         # Validate checkpoint content
