@@ -17,14 +17,14 @@
    cd lab_checker
    ```
 
-2. Then, you need to download all laboratories of each teaching group and save the associated .zip file the ```submissions``` directory.
+2. Then, you need to download all laboratories of each teaching group and save the associated .zip file in the ```submissions``` directory.
    ```console
-   ls submissions
+   ls -las submissions
    ```
 
-3. Finally, complete the solutions (labeled as TODO in the test directory files)
+3. Finally, complete the solutions in the test directory files (labeled as TODO within the files).
    ```console
-   ls test
+   ls -las test
    ```
 
 
@@ -32,14 +32,14 @@
 
 1. The typical steps for the example group 90 are (submissions packed in the p2-90.zip file):
    ```console
-   ./ws.sh start                                   : step 1: To spin up one container
-    cd /work/results                               : step 2: Go to the results directory
-   ./s10_unzip.sh  p2-90.zip                       : step 3: To unzip the submitted files at p2-90.zip
-   ./s10_tests.sh      tests/tests.in              : step 4: To get the execution output to compare with
-   ./s20_check.sh  ES  tests/tests.in   p2-90.in   : step 5: To check only the 90 group.
-    lynx report-p2-90.html                         : step 6: To open the associated report within the container
-    exit                                           : step 7: To exit the container
-   ./ws.sh stop                                    : step 8: To spin down the container.
+   ./ws.sh start                                : 1. To spin up one container
+    cd /work/results                            : 2. Go to the results directory
+   ./s10_unzip.sh    p2-90.zip                  : 3. To unzip the submitted files at p2-90.zip
+   ./s10_tests.sh    tests/tests.in             : 4. To get the execution output to compare with
+   ./s40_checker.sh  tests/tests.in  p2-90.in   : 5. To check only the 90 group.
+    lynx report-p2-90.html                      : 6. To open the associated report within the container
+    exit                                        : 7. To exit the container
+   ./ws.sh stop                                 : 8. To spin down the container.
    ```
 
    The following image is an example of report generated:
@@ -75,7 +75,7 @@
 
 4. To check only the 90 group:
    ```console
-   ./s20_check.sh      tests/tests.in   p2-90.in
+   ./s40_checker.sh    tests/tests.in   p2-90.in
    ```
 
 5. To show the results, first you could start a simple web server with:
@@ -89,6 +89,7 @@
 
 6. Finally, you can spin down the container:
    ```console
+   exit
    ./ws.sh stop
    ```
 </details>
@@ -133,12 +134,13 @@
 5. Check again:
    ```console
    popd
-   ./s20_check.sh  ES  tests/tests.in   p2-90.in
+   ./s40_checker.sh  tests/tests.in  p2-90.in
    lynx report-p2-90.html
    ```
 
 6. Finally, you can spin down the container:
    ```console
+   exit
    ./ws.sh stop
    ```
 
