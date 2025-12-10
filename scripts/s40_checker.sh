@@ -27,37 +27,54 @@ echo "s40_checker"
 echo "-----------"
 
 # 1) Test parameters...
-if [ $# -lt 1 ]; then
-     echo "  Version: v1.0"
-     echo "    Usage: $0 <test list file>  <submission list>"
-     echo " Examples: $0  tests/tests.in    p2-81.in"
-     echo "           $0  tests/tests.in    p2-88.in"
+if [ $# -lt 2 ]; then
+     echo "  Version: v2.0"
+     echo "    Usage: $0 <test list file>  <submission list>  [ID order to use]"
+     echo " Examples: $0  tests/tests.in    p2-81.in           order-81.in"
+     echo "           $0  tests/tests.in    p2-88.in           order-81.in"
      echo ""
      echo "  test list file  ::= file with the list of test (one per line)"
      echo "  submission list ::= file with the list of directories to check (one per line)"
+     echo "  ID order to use ::= file with the ordered list of student (one per line)"
      echo ""
-
-# TODO: next version with reordering
-#
-#     echo "  Version: v2.0"
-#     echo "    Usage: $0 <test list file>  <submission list>  <ID order to use>"
-#     echo " Examples: $0  tests/tests.in    p2-81.in           order-81.in"
-#     echo "           $0  tests/tests.in    p2-88.in           order-81.in"
-#     echo ""
-#     echo "  test list file  ::= file with the list of test (one per line)"
-#     echo "  submission list ::= file with the list of directories to check (one per line)"
-#     echo "  ID order to use ::= file with the ordered list of student (one per line)"
-#     echo ""
      exit
 fi
 
 # 2) Setup workspace...
-TEST_LIST=$1
-SUBM_LIST=$2
-ORDER_LIST=$3
+TEST_LIST="$1"
+SUBM_LIST="$2"
+ORDER_LIST="$3"
+EXERCISES="e1 e2"
 
 # 3) Checks...
-./s20_check_e1.sh  $TEST_LIST       $SUBM_LIST
-./s20_check_e2.sh  $TEST_LIST       $SUBM_LIST
-./s30_report.sh    $TEST_LIST       $SUBM_LIST
+echo ""
+for E in $EXERCISES; do
+    S="./s20_check_"$E".sh"
+    echo "   * $S $TEST_LIST  $SUBM_LIST..."
+
+    $S $TEST_LIST  $SUBM_LIST
+done
+
+# 4) Ordering (if needed)
+if [ "x$ORDER_LIST" != "x" ]; then
+
+     echo ""
+     for E in $EXERCISES; do
+         F="report-p2-801-"$E
+         echo "   * Ordering $F... "
+
+         mv      $F".csv"   $F"-unordered.csv"
+	 head -1 $F"-unordered.csv" >  $F".csv"
+         cat $ORDER_LIST | while read key ; do egrep "^$key;" $F"-unordered.csv" ; done >> $F".csv"
+     done
+
+fi
+
+# 5) Build report
+echo "   * Building report... "
+./s30_report.sh   $TEST_LIST   $SUBM_LIST
+
+# ok
+echo "   * Done."
+echo ""
 
