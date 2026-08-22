@@ -24,34 +24,73 @@ function general_report_print_header {
     RPH_LIST_I=$(cat $1)
     RPH_NUMBER_I=$(wc -l $1 | cut -f1 -d" " )
 
-    echo "<html>"                                                    > $REPORT_HTML
-    echo ""                                                         >> $REPORT_HTML
-    echo "<head>"                                                   >> $REPORT_HTML
-    echo "<style>"                                                  >> $REPORT_HTML
-    echo "table {"                                                  >> $REPORT_HTML
-    echo " border-collapse: collapse;"                              >> $REPORT_HTML
-    echo "}"                                                        >> $REPORT_HTML
-    echo "table, th, td {"                                          >> $REPORT_HTML
-    echo " border: 1px solid black;"                                >> $REPORT_HTML
-    echo "}"                                                        >> $REPORT_HTML
-    echo "</style>"                                                 >> $REPORT_HTML
-    echo "</head>"                                                  >> $REPORT_HTML
-    echo ""                                                         >> $REPORT_HTML
-    echo "<body>"                                                   >> $REPORT_HTML
-    echo ""                                                         >> $REPORT_HTML
-    echo "<table border=1 width=100%>"                              >> $REPORT_HTML
+cat > $REPORT_HTML <<EOF
+<html>
 
-    echo "<tr>"                                                     >> $REPORT_HTML
-    echo "<td align=center rowspan=2>Summary</td>"                  >> $REPORT_HTML
-    echo "<td align=center rowspan=2>Group</td>"                    >> $REPORT_HTML
-    echo "<td align=center rowspan=2>NIA</td>"                      >> $REPORT_HTML
-    echo "<td align=center rowspan=2>OK submission</td>"            >> $REPORT_HTML
-    echo "<td align=center rowspan=2>OK field type</td>"            >> $REPORT_HTML
-    echo "<td align=center colspan=$RPH_NUMBER_I>Exercise 1</td>"   >> $REPORT_HTML
-    echo "<td align=center colspan=1>Exercise 2</td>"               >> $REPORT_HTML
-    echo "</tr>"                                                    >> $REPORT_HTML
+<head>
+<style>
+    table {
+        border-collapse: collapse;
+    }
 
-    echo "<tr>"                                                     >> $REPORT_HTML
+    table, th, td {
+        border: 1px solid black;
+    }
+
+    .excel-table {
+        border-collapse: collapse;
+        font-family: Calibri, Arial, sans-serif;
+        font-size: 14px;
+        background: white;
+        color: #222;
+    }
+
+    .excel-table th,
+    .excel-table td {
+        border: 1px solid #b7b7b7;
+        padding: 4px 8px;
+        min-width: 70px;
+        height: 24px;
+        white-space: nowrap;
+    }
+    .excel-table th {
+        background: #e7e6e6;
+        font-weight: bold;
+        text-align: center;
+    }
+    .excel-table td {
+        text-align: center;
+    }
+    .excel-table tbody tr:hover td {
+        background: #f3f8fc;
+    }
+    .excel-table td:hover {
+        outline: 2px solid #217346;
+        outline-offset: -2px;
+    }
+    .excel-table a {
+        color: #0563c1;
+        text-decoration: underline;
+    }
+    </style>
+    </head>
+
+    <body>
+
+    <table border="1" width="100%" class="excel-table">
+    <tr>
+    <td align=center rowspan=2>Summary</td>
+    <td align=center rowspan=2>Group</td>
+    <td align=center rowspan=2>NIA</td>
+    <td align=center rowspan=2>OK submission</td>
+    <td align=center rowspan=2>OK field type</td>
+    <td align=center colspan=$RPH_NUMBER_I>Exercise 1</td>
+    <td align=center colspan=1>Exercise 2</td>
+    </tr>
+
+    <tr>
+EOF
+
     # ej1
     for I in $RPH_LIST_I; do
     cp  tests/mp-$I  tests/mp-${I}".txt"
