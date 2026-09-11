@@ -34,7 +34,7 @@ if [ $# -eq 0 ]; then
 fi
 
 INSTALL_PATH=$1
-VER_NAME=2.4.2
+VER_NAME=2.5.0
 
 
 # 1) Install base software
