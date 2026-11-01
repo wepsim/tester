@@ -9,30 +9,79 @@
 
 ### 1. Initial steps
 
-1. First, you need to download the project (download the .zip file or "git clone" it):
-   ```console
-   wget https://github.com/wepsim/tester/archive/refs/heads/main.zip
-   unzip tester-main.zip
-   mv tester-main lab_checker
-   cd lab_checker
-   ```
+1. First, you need to **download the wepsim-tester project**:
+2. Next, place **the .zip file with the submissions to be tested** must be placed in the ```submissions/``` directory:
+3. Finally, place **the solutions** in the ```test/``` directory files.
 
-2. Then, place all the teaching group submission files (*.zip) inside the ```submissions/``` directory. <br>
-   An example of a submitted class group file is ```p2-90.zip```, which contains several .zip files, one for each submission from a group of students (for example, ```100_200.zip```). <br>
-   If you list the submissions directory:
+
+<details>
+<summary>Click here for more details...</summary>
+<br/>
+
+1. First, you need to **download the wepsim-tester project**.<br>
+   Two options:
+   * a) Download the main .zip file:
      ```console
-     ls -1 submissions
+     wget https://github.com/wepsim/tester/archive/refs/heads/main.zip
+     unzip tester-main.zip
+     mv tester-main lab_checker
+     cd lab_checker
      ```
-     Should be similar to this one:
+   * b) Use "git clone":
      ```console
-     ...
-     p2-90.zip      : The associated .zip file for the group named "90"
+     git clone https://github.com/wepsim/tester.git
+     mv tester lab_checker
+     cd lab_checker
      ```
-     
-4. Finally, complete the solutions in the test directory files (labeled as TODO within the files).
+
+2. Next, place **the .zip file with the submissions to be tested** must be placed in the ```submissions/``` directory.<br>
+   Two options:
+   * a) Make a ```p2-90``` directory inside the ```submissions/``` directory and place inside the student submissions .zip files.<br/>
+        So, if we inspect the submissions directory:
+        ```console
+         find submissions/
+        ```
+        The output should be similar to:
+        ```console
+        submissions/
+        submissions/p2-90
+        submissions/p2-90/100_200.zip
+        submissions/...
+        ```
+   * b) Place in the ```submissions/``` directory the teaching group file (for example, ```p2-90.zip```).<br>
+        This ```p2-90.zip``` file contains several .zip files inside, one for each submission from a group of students (```100_200.zip```, etc.). <br>
+   
+        So, if we list the submissions directory:
+        ```console
+         ls -1 submissions/
+        ```
+        The output should be similar to this one:
+        ```console
+         ...
+         p2-90.zip      : The associated .zip file for the group named "90"
+        ```
+        And inside this file there are each student group submissions:
+        ```console
+         unzip -v p2-90.zip
+         Archive:  p2-90.zip
+          Length   Method    Size  Cmpr    Date    Time   CRC-32   Name
+         --------  ------  ------- ---- ---------- ----- --------  ----
+                0  Stored        0   0% 2025-12-05 01:43 00000000  p2-90/
+            49933  Defl:X    49757   0% 2025-12-05 01:43 e5f00b62  p2-90/100_200.zip
+         --------          -------  ---                            -------
+            49933            49757   0%                            2 files
+        ```
+
+
+
+3. Finally, complete **the solutions** in the test directory files (labeled as TODO within the files).
    ```console
    ls -las test
    ```
+
+</details>
+
+
 
 
 ### 2. To check one group for the first time
