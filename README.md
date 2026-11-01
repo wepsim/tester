@@ -9,33 +9,30 @@
 
 ### 1. Initial steps
 
-1. First, you need to **download the wepsim-tester project**:
-2. Next, place **the .zip file with the submissions to be tested** must be placed in the ```submissions/``` directory:
+1. First, you need to **download the wepsim-tester project**.
+2. Next, **the submissions to be tested** must be placed in the ```submissions/``` directory.
 3. Finally, place **the solutions** in the ```test/``` directory files.
 
 
 <details>
-<summary>Click here for more details...</summary>
-<br/>
+<summary>Please click here for more details...</summary>
 
-1. First, you need to **download the wepsim-tester project**.<br>
-   Two options:
+1. To **download the wepsim-tester project** there are two main options:
    * a) Download the main .zip file:
-     ```console
-     wget https://github.com/wepsim/tester/archive/refs/heads/main.zip
-     unzip tester-main.zip
-     mv tester-main lab_checker
-     cd lab_checker
-     ```
+        ```console
+        wget https://github.com/wepsim/tester/archive/refs/heads/main.zip
+        unzip tester-main.zip
+        mv tester-main lab_checker
+        cd lab_checker
+        ```
    * b) Use "git clone":
-     ```console
-     git clone https://github.com/wepsim/tester.git
-     mv tester lab_checker
-     cd lab_checker
-     ```
+        ```console
+        git clone https://github.com/wepsim/tester.git
+        mv tester lab_checker
+        cd lab_checker
+        ```
 
-2. Next, place **the .zip file with the submissions to be tested** must be placed in the ```submissions/``` directory.<br>
-   Two options:
+2. To place **the submissions to be tested** inside the ```submissions/``` directory there are two main options:
    * a) Make a ```p2-90``` directory inside the ```submissions/``` directory and place inside the student submissions .zip files.<br/>
         So, if we inspect the submissions directory:
         ```console
@@ -72,16 +69,27 @@
             49933            49757   0%                            2 files
         ```
 
-
-
-3. Finally, complete **the solutions** in the test directory files (labeled as TODO within the files).
-   ```console
-   ls -las test
-   ```
+3. Finally, to have **the solutions** in the test directory there are two main alternatives:
+   * a) To edit the ```check-*-part*``` files inside the ```test/``` directory and replace the TODO sections with the solution:
+        ```console
+        vi tests/check-mc-part1  tests/check-mc-part2 \
+           tests/check-mp-part1  tests/check-mp-part2
+        ```
+        Then, build the test output to compare with:
+        ```console
+        ./s10_tests.sh    tests/tests.in
+        ```
+   * a) To provide the expected output to compare with inside the ```tests/base``` directory:
+        ```console
+        echo "memory 0x8000 = 0x84000000; memory 0x8004 = 0xc000000;" > tests/base/out-nop.txt
+        echo "memory 0x8000 = 0x88000000; memory 0x8004 = 0xc000000;" > tests/base/out-nop2.txt
+        echo "memory 0x8000 = 0x8c000000; memory 0x8004 = 0xc000000;" > tests/base/out-nop3.txt
+        echo "memory 0x8000 = 0x90000000; memory 0x8004 = 0xc000000;" > tests/base/out-nop4.txt
+        echo "memory 0x8000 = 0x94000000; memory 0x8004 = 0xc000000;" > tests/base/out-nop5.txt
+        ```
+        In this case, the solution is not required; instead, the expected outputs of the solution are generated directly.
 
 </details>
-
-
 
 
 ### 2. To check one group for the first time
