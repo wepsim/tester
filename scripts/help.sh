@@ -2,7 +2,7 @@
 #set -x
 
 #
-#   Copyright 2015-2026 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Alonso Camarmas
+#   Copyright 2015-2026 The WepSIM TESTER TEAM (see docs/WEPSIM-TESTER-TEAM.md)
 #
 #   This file is part of WepSIM (https://wepsim.github.io/wepsim/)
 #

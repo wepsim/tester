@@ -17,12 +17,19 @@
    cd lab_checker
    ```
 
-2. Then, you need to download all laboratories of each teaching group and save the associated .zip file in the ```submissions``` directory.
-   ```console
-   ls -las submissions
-   ```
-
-3. Finally, complete the solutions in the test directory files (labeled as TODO within the files).
+2. Then, place all the teaching group submission files (*.zip) inside the ```submissions/``` directory. <br>
+   An example of a submitted class group file is ```p2-90.zip```, which contains several .zip files, one for each submission from a group of students (for example, ```100_200.zip```). <br>
+   If you list the submissions directory:
+     ```console
+     ls -1 submissions
+     ```
+     Should be similar to this one:
+     ```console
+     ...
+     p2-90.zip      : The associated .zip file for the group named "90"
+     ```
+     
+4. Finally, complete the solutions in the test directory files (labeled as TODO within the files).
    ```console
    ls -las test
    ```

@@ -2,22 +2,22 @@
 #set -x
 
 #
-#  Copyright 2019-2026 Saul Alonso Monsalve, Felix Garcia Carballeira, Jose Rivadeneira Lopez-Bravo, Alejandro Calderon Mateos,
+#   Copyright 2019-2026 The WepSIM TESTER TEAM (see docs/WEPSIM-TESTER-TEAM.md)
 #
-#  This file is part of WepSIM proyect.
+#   This file is part of WepSIM (https://wepsim.github.io/wepsim/)
 #
-#  WepSIM is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU Lesser General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#   WepSIM is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
 #
-#  WepSIM is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU Lesser General Public License for more details.
+#   WepSIM is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Lesser General Public License for more details.
 #
-#  You should have received a copy of the GNU Lesser General Public License
-#  along with WepSIM.  If not, see <http://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with WepSIM.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 
@@ -36,7 +36,7 @@ fi
 # check docker
 #
 
-WSSH_VER="v1.0"
+WSSH_VER="v1.2"
 DOCKER_PREFIX_NAME=docker
 
 docker -v >& /dev/null
@@ -67,34 +67,41 @@ while (( "$#" ))
 do
 	arg_i=$1
 	case $arg_i in
-	     start)
-		# Check params
-		if [ ! -f docker/ws-dockerfile ]; then
-		    echo ": The docker/ws-dockerfile file is not found."
-		    echo ": * Did you execute git clone https://github.com/acaldero/wepsim_tester.git?."
-		    echo ""
-		    exit
-		fi
+	     build)
+                # Check params
+                if [ ! -f docker/ws-dockerfile ]; then
+                    echo ": The docker/ws-dockerfile file is not found."
+		    echo ": * Did you clone the wepsim-tester repository?"
+		    echo ":   -> git clone https://github.com/wepsim/tester.git"
+                    echo ""
+                    exit
+                fi
 
-		HOST_UID=$(id -u)
-		HOST_GID=$(id -g)
+                HOST_UID=$(id -u)
+                HOST_GID=$(id -g)
 
-		# Build image
-		echo "Building image (it may take a while)..."
+		# Build image (just in case)
+                echo "Building image (it may take a while)..."
 		cd docker
 		docker image build -t ws --build-arg UID=$HOST_UID --build-arg GID=$HOST_GID -f ws-dockerfile .
 		cd ..
 
-		# Build tester (just in case)
+                # Build tester (just in case)
 		mkdir -p results
 		chown -R $HOST_UID:$HOST_GID results
+             ;;
+
+	     start)
+		# Build (just in case)
+                $0 build
 
 		# Start container cluster (single node)
 		echo "Building container..."
 		HOST_UID=$HOST_UID HOST_GID=$HOST_GID docker compose -f docker/ws-dockercompose.yml up -d --scale node=1
 		if [ $? -gt 0 ]; then
 		    echo ": The docker compose command failed to spin up containers."
-		    echo ": * Did you execute git clone https://github.com/acaldero/wepsim_tester.git?."
+		    echo ": * Did you use the wepsim-tester repository?"
+		    echo ":   -> git clone https://github.com/wepsim/tester.git"
 		    echo ""
 		    exit
 		fi
@@ -120,7 +127,8 @@ do
 		HOST_UID=$HOST_UID HOST_GID=$HOST_GID docker compose -f docker/ws-dockercompose.yml down
 		if [ $? -gt 0 ]; then
 		    echo ": The docker compose command failed to stop containers."
-		    echo ": * Did you execute git clone https://github.com/acaldero/wepsim_tester.git?."
+		    echo ": * Did you use the wepsim-tester repository?"
+		    echo ":   -> git clone https://github.com/wepsim/tester.git"
 		    echo ""
 		    exit
 		fi
