@@ -10,8 +10,21 @@
 ### 1. Initial steps
 
 1. First, you need to **download the wepsim-tester project**.
+   ```console
+    git clone https://github.com/wepsim/tester.git
+    mv tester lab_checker
+    cd lab_checker
+    ./ws.sh build
+   ```
 2. Next, **the submissions to be tested** must be placed in the ```submissions/``` directory.
+   ```console
+    cp .../p2-90.zip submissions/
+   ```
 3. Finally, place **the solutions** in the ```test/``` directory files.
+   ```console
+    vi tests/check-mc-part1  tests/check-mc-part2 \
+       tests/check-mp-part1  tests/check-mp-part2
+   ```
 
 
 <details>
@@ -77,8 +90,9 @@
         ```
         Then, build the test output to compare with:
         ```console
-        ./s10_tests.sh    tests/tests.in
-        ```
+         ./ws.sh start
+         ./s10_tests.sh    tests/tests.in
+         ./ws.sh stop        ```
    * a) To provide the expected output to compare with inside the ```tests/base``` directory:
         ```console
         echo "memory 0x8000 = 0x84000000; memory 0x8004 = 0xc000000;" > tests/base/out-nop.txt
